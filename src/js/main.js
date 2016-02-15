@@ -2,13 +2,18 @@
 
 angular.module('netshoes', []);
 
-angular.module('netshoes').controller('mainController', function($scope, $q, $timeout, $filter, mainService){
+angular.module('netshoes').controller('mainController', function($scope, $q, $timeout, $filter, localStorage, mainService){
 
   $scope.cart = [];
   $scope.subTotal = [];
   $scope.error = false;
   $scope.success = false;
   var deferred = $q.defer();
+
+  $scope.latestData = function() {
+    // $window.localStorage.removeItem('my-cart');
+    $scope.cart = localStorage.getData();
+  };
 
   mainService.getItems().success(function(data){
     $scope.loja = data;
@@ -28,6 +33,7 @@ angular.module('netshoes').controller('mainController', function($scope, $q, $ti
 
   $scope.addItemCart = function(item){
     $scope.cart.push(item);
+    localStorage.setData(item);
     getTotalPrice();
   };
 
@@ -66,6 +72,9 @@ angular.module('netshoes').controller('mainController', function($scope, $q, $ti
       $scope.success = true;
       $scope.postCart = data;
       deferred.resolve($scope.postCart);
+      $scope.cart = [];
+      $window.localStorage.removeItem('my-cart');
+      $scope.hideCart();
     }).error(function(data){
       $scope.error = true;
     });
@@ -83,4 +92,16 @@ angular.module('netshoes').service('mainService', function($http){
       });
     }
   }
+})
+
+angular.module('netshoes').factory("localStorage", function($window, $rootScope) {
+  return {
+    setData: function(item) {
+      $window.localStorage && $window.localStorage.setItem('my-cart', item);
+      return this;
+    },
+    getData: function() {
+      return $window.localStorage && $window.localStorage.getItem('my-cart');
+    }
+  };
 });

@@ -14,7 +14,7 @@
 </head>
 <body ng-app="netshoes">
 
-  <main id="container" class="container corinthians" ng-controller="mainController">
+  <main id="container" class="container corinthians" ng-controller="mainController" ng-init="latestData()">
 
     <div class="row">
       <div class="col-sm-4 item" ng-repeat="item in loja.products" id="{{item.sku}}" ng-click="addItemCart(item)">
