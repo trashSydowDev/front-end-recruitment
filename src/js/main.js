@@ -11,7 +11,6 @@ angular.module('netshoes').controller('mainController', function($scope, $q, $ti
   var deferred = $q.defer();
 
   $scope.latestData = function() {
-    // $window.localStorage.removeItem('my-cart');
     $scope.cart = localStorage.getData();
   };
 
