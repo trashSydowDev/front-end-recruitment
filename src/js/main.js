@@ -2,17 +2,13 @@
 
 angular.module('netshoes', []);
 
-angular.module('netshoes').controller('mainController', function($scope, $q, $timeout, $filter, localStorage, mainService){
+angular.module('netshoes').controller('mainController', function($scope, $q, $timeout, $filter, $window, localStorage, mainService){
 
   $scope.cart = [];
   $scope.subTotal = [];
   $scope.error = false;
   $scope.success = false;
   var deferred = $q.defer();
-
-  $scope.latestData = function() {
-    $scope.cart = localStorage.getData();
-  };
 
   mainService.getItems().success(function(data){
     $scope.loja = data;
@@ -31,7 +27,11 @@ angular.module('netshoes').controller('mainController', function($scope, $q, $ti
   }
 
   $scope.addItemCart = function(item){
-    $scope.cart.push(item);
+    if (!$scope.cart){
+      $scope.cart = [{}];
+    } else {
+      $scope.cart.push(item);
+    }
     localStorage.setData(item);
     getTotalPrice();
   };
@@ -41,6 +41,7 @@ angular.module('netshoes').controller('mainController', function($scope, $q, $ti
       if(item_id === i){
         $scope.cart.splice(item_id, 1);
         rollBackItem(v);
+        localStorage.updateData($scope.cart);
       }
     });
   };
@@ -78,6 +79,13 @@ angular.module('netshoes').controller('mainController', function($scope, $q, $ti
       $scope.error = true;
     });
   }
+
+  $scope.latestData = function() {
+    var cart = localStorage.getData();
+    if(cart){
+      $scope.cart = JSON.parse(cart);
+    }
+  };
 });
 
 angular.module('netshoes').service('mainService', function($http){
@@ -96,7 +104,26 @@ angular.module('netshoes').service('mainService', function($http){
 angular.module('netshoes').factory("localStorage", function($window, $rootScope) {
   return {
     setData: function(item) {
-      $window.localStorage && $window.localStorage.setItem('my-cart', item);
+      var getCart;
+      if(!$window.localStorage.getItem('my-cart')){
+        getCart = [];
+      } else {
+        getCart = JSON.parse($window.localStorage.getItem('my-cart'));
+      }
+      getCart.push(item);
+      var string = JSON.stringify(getCart);
+      $window.localStorage && $window.localStorage.setItem('my-cart', string);
+      return this;
+    },
+    updateData: function(item){
+      var updateCart;
+      if(!$window.localStorage.getItem('my-cart')){
+        updateCart = [];
+      } else {
+        $window.localStorage.removeItem('my-cart');
+        updateCart = JSON.stringify(item);
+      }
+      $window.localStorage && $window.localStorage.setItem('my-cart', updateCart);
       return this;
     },
     getData: function() {

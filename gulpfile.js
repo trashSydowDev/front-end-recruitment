@@ -2,6 +2,7 @@ var gulp = require('gulp');
 var sass = require('gulp-sass');
 var path = require('path');
 var express = require('express');
+var open = require('gulp-open');
 var app = express();
 var products = require('./public/data/products');
 var cart = [];
@@ -49,5 +50,13 @@ gulp.task('sass:watch', function () {
   gulp.watch('./scss/**/*.scss', ['sass']);
 });
 
-gulp.task('default', ['express', 'sass', 'sass:watch']
+gulp.task('open', function(){
+  gulp.src('./src/index.html')
+  .pipe(open({
+    uri: 'http://localhost:4000',
+    app: 'google chrome'
+  }));
+});
+
+gulp.task('default', ['express', 'sass', 'sass:watch', 'open']
 );

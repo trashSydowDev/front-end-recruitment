@@ -25,6 +25,7 @@
     "express": "^4.13.4",
     "gulp": "^3.9.1",
     "gulp-jasmine": "^2.2.1",
+    "gulp-open": "^1.0.0",
     "gulp-sass": "^2.2.0",
     "gulp-serve": "^1.2.0",
     "gulp-webserver": "^0.9.1",
